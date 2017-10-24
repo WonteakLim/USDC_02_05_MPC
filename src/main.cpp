@@ -65,6 +65,28 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
+Eigen::VectorXd global2local(Eigen::VectorXd VehState, Eigen::VectorXd pt_global)
+{
+    double X_veh = VehState(0);
+    double Y_veh = VehState(1);
+    double Psi_veh = VehState(2);
+
+    double X_pt = pt_global(0);
+    double Y_pt = pt_global(1);
+
+    double x_diff = X_pt - X_veh;
+    double y_diff = Y_pt - Y_veh;
+    
+    double x_local = x_diff*cos(Psi_veh) + y_diff*sin(Psi_veh);
+    double y_local = -x_diff*sin(Psi_veh) + y_diff*cos(Psi_veh);
+
+    Eigen::VectorXd pt_local = Eigen::VectorXd(2);
+
+    pt_local << x_local, y_local;
+
+    return pt_local;
+}
+
 int main() {
   uWS::Hub h;
 
@@ -73,7 +95,8 @@ int main() {
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
-    // "42" at the start of the message means there's a websocket message event.
+	  std::cout << "On Message" << std::endl;
+      	  // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     string sdata = string(data).substr(0, length);
@@ -100,11 +123,49 @@ int main() {
           */
           double steer_value;
           double throttle_value;
+	 
+	  std::cout << "Start of Calculation" << std::endl; 
+
+	  Eigen::VectorXd VehPos = Eigen::VectorXd(3);
+	  VehPos << px, py, psi;
+
+	  Eigen::VectorXd ptsx_local = Eigen::VectorXd((int)ptsx.size());
+	  Eigen::VectorXd ptsy_local = Eigen::VectorXd((int)ptsy.size());
+	  for( int i=0; i< (int)ptsx.size() ; i++ )
+	  {
+	      Eigen::VectorXd pt_global = Eigen::VectorXd(2);
+	      pt_global << ptsx[i], ptsy[i];
+	      Eigen::VectorXd pt_local = global2local( VehPos, pt_global);
+
+	      ptsx_local(i) = pt_local(0);
+	      ptsy_local(i) = pt_local(1);
+	  }
+	  
+	  auto coeffs = polyfit( ptsx_local, ptsy_local, 1);
+
+	  px = 0.0;
+	  py = 0.0;
+	  psi = 0.0;
+
+	  double cte = coeffs[0] + coeffs[1] * px;
+	  double epsi = atan( coeffs[1] );
+
+	  Eigen::VectorXd state = Eigen::VectorXd(6);
+	  state << px, py, psi, v, cte, epsi;
+
+
+
+	  std::cout << "Solve ... " << std::endl;
+	  vector<double> results = mpc.Solve( state, coeffs );
+	  steer_value = results[0];
+	  throttle_value = results[1];
+
+	  std::cout << "End of calcuation" << std::endl;
 
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = steer_value / deg2rad(25);
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
@@ -113,7 +174,6 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
 
@@ -123,6 +183,12 @@ int main() {
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
+
+	  for( int i=0; i< (int)ptsx.size() ; i++)
+	  {
+	      next_x_vals.push_back( ptsx_local(i) );
+	      next_y_vals.push_back( ptsy_local(i) );
+	  }
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;

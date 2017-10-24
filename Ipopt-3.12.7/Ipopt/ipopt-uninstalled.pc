@@ -1,0 +1,10 @@
+prefix=/usr/local
+libdir=/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/Interfaces
+
+Name: IPOPT
+Description: Interior Point Optimizer
+URL: https://projects.coin-or.org/Ipopt
+Version: 3.12.7
+Libs: ${libdir}/libipopt.la /usr/local/lib/libcoinlapack.a /usr/local/lib/libcoinblas.a -lgfortran  -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -lgfortran -lm -lquadmath  -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -lgfortran -lm -lquadmath /usr/local/lib/libcoinblas.a -lgfortran  -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -lgfortran -lm -lquadmath  -L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../.. -lgfortran -lm -lquadmath -lm  -ldl
+Cflags: -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/Interfaces -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/Common -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/LinAlg -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/Algorithm -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/contrib/CGPenalty -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/contrib/LinearSolverLoader -I/home/lim/Git/USDC_02_05_MPC/Ipopt-3.12.7/Ipopt/src/Common
+Requires: coinmumps 
