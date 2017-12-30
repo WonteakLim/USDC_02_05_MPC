@@ -61,48 +61,38 @@ using the following settings:
 
 Please (do your best to) stick to [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
 
-## Project Instructions and Rubric
+## Algorithm Description
 
-Note: regardless of the changes you make, your project must be buildable using
-cmake and make!
+#### Model
+To predict vehicle's motion, we use a kinematic model. In this model, the inputs are a steering angle(delta) and acceleration (a). Based on these input, vehicle state (x, y, psi) is updated each step. The update equations are below.
 
-More information is only accessible by people who are already enrolled in Term 2
-of CarND. If you are enrolled, see [the project page](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/f1820894-8322-4bb3-81aa-b26b3c6dcbaf/lessons/b1ff3be0-c904-438e-aad3-2b5379f0e0c3/concepts/1a2255a0-e23c-44cf-8d41-39b8a3c8264a)
-for instructions and the project rubric.
+$$$ x_{t+1}=x_t+v_t*cos(\psi_t)*dt $$$
+$$$ y_{t+1}=y_t+v_t*sin(\psi_t)*dt $$$
+$$$ \psi_{t+1}=\psi_t+(v_t/L_f)*\delta_t*dt $$$
+$$$ v_{t+1}=v_t+a_t*dt $$$
 
-## Hints!
+#### Timestep Length and Elapsed Duration
+Timestep length and elapsed duration are strong factors to determine the performance of MPC. As timestep length is shorter, we can consider more detailed motion. Also, the elapsed duration help the vehicle prepare the future path in advance. However, the longer the elapsed duration is, the more computation becomes. For this reason, it is important to select appropriate values of timestep and duration. In this project, we select 0.1 and 1 second for steptime and duration. These values were found by a trial-and-error method.
 
-* You don't have to follow this directory structure, but if you do, your work
-  will span all of the .cpp files here. Keep an eye out for TODOs.
+#### Polynomial Fitting and MPC Preprocessing
+We can get the way point in a global coordinate (fixed frame coordinate). In this coordinate, we cannot represent all the patterns of way points as polynomial because polynomial is a function of x. In other word, we cannot express the straight way points toward y-axis using a polynomial function. To solve the problem, we use a vehicle frame coordinate. In this coordinate, x-axis is always driving direction.
 
-## Call for IDE Profiles Pull Requests
+All the way points are converted from the global coordinate (fixed frame coordiante) into the vehicle frame coordinate (moving frame coordinate). Based on these way points, we can model a continuous reference path.
 
-Help your fellow students!
+Since the MPC needs the desired posiiton in each step, we extract these position on the reference path based on the speed and timestep length.
 
-We decided to create Makefiles with cmake to keep this project as platform
-agnostic as possible. Similarly, we omitted IDE profiles in order to we ensure
-that students don't feel pressured to use one IDE or another.
 
-However! I'd love to help people get up and running with their IDEs of choice.
-If you've created a profile for an IDE that you think other students would
-appreciate, we'd love to have you add the requisite profile files and
-instructions to ide_profiles/. For example if you wanted to add a VS Code
-profile, you'd add:
+#### Model Predictive Control with Latency
+To deal with latency, we estimate the future position after 100 miliseconds (latency). The position can be calculated by current states and a vehicle model (if the current position is (0,0,0)).
 
-* /ide_profiles/vscode/.vscode
-* /ide_profiles/vscode/README.md
+$$$ x_f=v_t*dt $$$
+$$$ y_f=0 $$$
+$$$ \psi_f=(v_t/L_f)*\delta*dt $$$
+$$$ v_f=v_t + a*dt $$$
+$$$ cte_f=cte_t + v_t*sin(\psi^{err}_t)*dt $$$
+$$$ \psi^{err}_f=\psi^{err}_t+(v_t/L_f)*\delta_t*dt $$$
 
-The README should explain what the profile does, how to take advantage of it,
-and how to install it.
+The etimated future position is used as the initial position of Model Predictive Control (MPC) to compensate latency.
 
-Frankly, I've never been involved in a project with multiple IDE profiles
-before. I believe the best way to handle this would be to keep them out of the
-repo root to avoid clutter. My expectation is that most profiles will include
-instructions to copy files to a new location to get picked up by the IDE, but
-that's just a guess.
-
-One last note here: regardless of the IDE used, every submitted project must
-still be compilable with cmake and make./
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
+#### Simulation
+[![Video Label](http://img.youtube.com/vi/NZsq8eb0y4w/0.jpg)](https://youtu.be/NZsq8eb0y4w)
