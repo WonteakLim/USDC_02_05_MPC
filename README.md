@@ -67,8 +67,11 @@ Please (do your best to) stick to [Google's C++ style guide](https://google.gith
 To predict vehicle's motion, we use a kinematic model. In this model, the inputs are a steering angle(delta) and acceleration (a). Based on these input, vehicle state (x, y, psi) is updated each step. The update equations are below.
 
 ![](http://latex.codecogs.com/gif.latex?x_%7Bt&plus;1%7D%3Dx_t&plus;v_t*cos%28%5Cpsi_t%29*dt)
+
 ![](http://latex.codecogs.com/gif.latex?y_%7Bt&plus;1%7D%3Dy_t&plus;v_t*sin%28%5Cpsi_t%29*dt)
+
 ![](http://latex.codecogs.com/gif.latex?%5Cpsi_%7Bt&plus;1%7D%3D%5Cpsi_t&plus;%28v_t/L_f%29*%5Cdelta_t*dt)
+
 ![](http://latex.codecogs.com/gif.latex?v_%7Bt&plus;1%7D%3Dv_t&plus;a_t*dt)
 
 #### Timestep Length and Elapsed Duration
@@ -86,10 +89,15 @@ Since the MPC needs the desired posiiton in each step, we extract these position
 To deal with latency, we estimate the future position after 100 miliseconds (latency). The position can be calculated by current states and a vehicle model (if the current position is (0,0,0)).
 
 ![](http://latex.codecogs.com/gif.latex?x_f%3Dv_t*dt)
+
 ![](http://latex.codecogs.com/gif.latex?y_f%3D0)
+
 ![](http://latex.codecogs.com/gif.latex?%5Cpsi_f%3D%28v_t/L_f%29*%5Cdelta*dt)
+
 ![](http://latex.codecogs.com/gif.latex?v_f%3Dv_t%20&plus;%20a*dt)
+
 ![](http://latex.codecogs.com/gif.latex?cte_f%3Dcte_t%20&plus;%20v_t*sin%28%5Cpsi%5E%7Berr%7D_t%29*dt)
+
 ![](http://latex.codecogs.com/gif.latex?%5Cpsi%5E%7Berr%7D_f%3D%5Cpsi%5E%7Berr%7D_t&plus;%28v_t/L_f%29*%5Cdelta_t*dt)
 
 The etimated future position is used as the initial position of Model Predictive Control (MPC) to compensate latency.
