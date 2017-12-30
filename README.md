@@ -66,6 +66,7 @@ Please (do your best to) stick to [Google's C++ style guide](https://google.gith
 #### Model
 To predict vehicle's motion, we use a kinematic model. In this model, the inputs are a steering angle(delta) and acceleration (a). Based on these input, vehicle state (x, y, psi) is updated each step. The update equations are below.
 
+![](http://latex.codecogs.com/gif.latex?x_%7Bt&plus;1%7D%3Dx_t&plus;v_t*cos%28%5Cpsi_t%29*dt)
 $$$ x_{t+1}=x_t+v_t*cos(\psi_t)*dt $$$
 $$$ y_{t+1}=y_t+v_t*sin(\psi_t)*dt $$$
 $$$ \psi_{t+1}=\psi_t+(v_t/L_f)*\delta_t*dt $$$
